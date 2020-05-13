@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'
 
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container'
@@ -41,23 +42,50 @@ const useStyles = makeStyles((theme: Theme) =>
 
     currencyType: {
       width: '30%'
+    },
+
+    currencyImage: {
+      width: 18,
+      height: 18,
+      borderRadius: '50%'
     }
   }),
 );
 
-function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-  return { name, calories, fat, carbs, protein };
+type TCoin = {
+  name: string
+  fullName: string
+  imageUrl: string
+  price: number
+  volume24Hour: number
 }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 function App() {
+  const [coins, setCoins] = useState<TCoin[]>([])
+
+  useEffect(() => {
+    const API_KEY: string = `3a06d412960b4f017361f492d59765a72c8cd3266d7e0ac360df95b1d3aae70d`;
+
+    axios
+      .get(`https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=USD&api_key=${API_KEY}`)
+      .then(({ data }) => {
+        const coins: TCoin[] = data.Data.map((coin: any) => {
+          const coinItem: TCoin = {
+            name: coin.CoinInfo.Name,
+            fullName: coin.CoinInfo.FullName,
+            imageUrl: `https://www.cryptocompare.com/${coin.CoinInfo.ImageUrl}`,
+            price: coin.RAW.USD.PRICE,
+            volume24Hour: coin.RAW.USD.VOLUME24HOUR
+          }
+
+          return coinItem
+        })
+
+        setCoins(coins)
+      })
+  }, [])
+
+
   const classes = useStyles();
 
   return (
@@ -65,7 +93,7 @@ function App() {
       <div className="App">
         <Grid container spacing={3}>
           <Grid item xs={8}>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} elevation={3}>
               <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -77,15 +105,15 @@ function App() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.name}>
+                  {coins.map((coin) => (
+                    <TableRow key={coin.name}>
                       <TableCell component="th" scope="row">
-                        {row.name}
+                        <img src={coin.imageUrl} className={classes.currencyImage} alt="Coin icon" />
                       </TableCell>
-                      <TableCell align="left">{row.calories}</TableCell>
-                      <TableCell align="left">{row.fat}</TableCell>
-                      <TableCell align="left">{row.carbs}</TableCell>
-                      <TableCell align="left">{row.protein}</TableCell>
+                      <TableCell align="left">{coin.name}</TableCell>
+                      <TableCell align="left">{coin.fullName}</TableCell>
+                      <TableCell align="left">${(coin.price).toFixed(3)}</TableCell>
+                      <TableCell align="left">${(coin.volume24Hour).toFixed(3)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
