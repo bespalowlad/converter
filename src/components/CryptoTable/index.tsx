@@ -25,13 +25,14 @@ type TOwnProps = {
     classes: any
 }
 
+type TProps = TStateProps & TDispatchProps & TOwnProps
+
+
 const mapStateToProps = (state: TRootState) => ({
     coins: state.currency.coins
 })
 
 const mapDispatchToProps = { fetchCoins }
-
-type TProps = TStateProps & TDispatchProps & TOwnProps
 
 const CryptoTable: React.FC<TProps> = ({ coins, fetchCoins, classes }) => {
     useEffect(() => {

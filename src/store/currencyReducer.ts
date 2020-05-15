@@ -1,15 +1,10 @@
 import axios from 'axios'
+import Dispatch from 'redux'
+import { ThunkAction } from 'redux-thunk'
+import { TCoin } from '../types'
 
 // constants
 export const RECEIVE_COINS = 'ADD_COIN'
-
-export type TCoin = {
-    name: string
-    fullName: string
-    imageUrl: string
-    price: number
-    volume24Hour: number
-}
 
 // type state
 type TcurrencyState = {
@@ -47,24 +42,24 @@ export const receiveCoins = (coins: TCoin[]): TReceiveCoinsAction => {
     }
 }
 
-export const fetchCoins = () => (dispatch: any) => {
-    const API_KEY: string = `3a06d412960b4f017361f492d59765a72c8cd3266d7e0ac360df95b1d3aae70d`;
+export const fetchCoins = (): ThunkAction<Promise<void>, TcurrencyState, unknown, TActionType> => {
+    return async (dispatch) => {
+        const API_KEY: string = `3a06d412960b4f017361f492d59765a72c8cd3266d7e0ac360df95b1d3aae70d`;
 
-    axios
-        .get(`https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=USD&api_key=${API_KEY}`)
-        .then(({ data }) => {
-            const coins: TCoin[] = data.Data.map((coin: any) => {
-                const coinItem: TCoin = {
-                    name: coin.CoinInfo.Name,
-                    fullName: coin.CoinInfo.FullName,
-                    imageUrl: `https://www.cryptocompare.com/${coin.CoinInfo.ImageUrl}`,
-                    price: coin.RAW.USD.PRICE,
-                    volume24Hour: coin.RAW.USD.VOLUME24HOUR
-                }
+        const { data } = await axios.get(`https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=USD&api_key=${API_KEY}`)
 
-                return coinItem
-            })
+        const coins: TCoin[] = data.Data.map((coin: any) => {
+            const coinItem: TCoin = {
+                name: coin.CoinInfo.Name,
+                fullName: coin.CoinInfo.FullName,
+                imageUrl: `https://www.cryptocompare.com/${coin.CoinInfo.ImageUrl}`,
+                price: coin.RAW.USD.PRICE,
+                volume24Hour: coin.RAW.USD.VOLUME24HOUR
+            }
 
-            dispatch(receiveCoins(coins))
+            return coinItem
         })
+
+        dispatch(receiveCoins(coins))
+    }
 }
