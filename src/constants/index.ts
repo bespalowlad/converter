@@ -1,0 +1,3 @@
+export const RECEIVE_COINS = 'ADD_COIN'
+
+export const CHANGE_SORTING_PARAM = 'CHANGE_SORTING_PARAM'

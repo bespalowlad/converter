@@ -1,28 +1,39 @@
 import axios from 'axios'
-import Dispatch from 'redux'
 import { ThunkAction } from 'redux-thunk'
-import { TCoin } from '../types'
-
-// constants
-export const RECEIVE_COINS = 'ADD_COIN'
+import {
+    TCoin,
+    TReceiveCoinsAction,
+    TSortParamsByPrice,
+    TChangeSortingParamAction
+} from '../types'
+import { RECEIVE_COINS, CHANGE_SORTING_PARAM } from '../constants'
 
 // type state
 type TcurrencyState = {
-    coins: TCoin[]
+    coins: TCoin[],
+    sortingParam: TSortParamsByPrice
+}
+
+const initialState: TcurrencyState = {
+    coins: [],
+    sortingParam: 'FROM_EXPENSIVE'
 }
 
 // type action
-type TActionType = TReceiveCoinsAction
-
-const initialState: TcurrencyState = {
-    coins: []
-}
+type TActionType = TReceiveCoinsAction | TChangeSortingParamAction
 
 export const currencyReducer = (state = initialState, action: TActionType): TcurrencyState => {
     switch (action.type) {
         case RECEIVE_COINS:
             return {
+                ...state,
                 coins: [...action.payload]
+            }
+
+        case CHANGE_SORTING_PARAM:
+            return {
+                ...state,
+                sortingParam: state.sortingParam === 'FROM_EXPENSIVE' ? 'FROM_CHEAP' : 'FROM_EXPENSIVE'
             }
 
         default:
@@ -30,15 +41,18 @@ export const currencyReducer = (state = initialState, action: TActionType): Tcur
     }
 }
 
-export type TReceiveCoinsAction = {
-    type: typeof RECEIVE_COINS,
-    payload: TCoin[]
-}
 
 export const receiveCoins = (coins: TCoin[]): TReceiveCoinsAction => {
     return {
         type: RECEIVE_COINS,
         payload: coins
+    }
+}
+
+
+export const changeSortingParam = (): TChangeSortingParamAction => {
+    return {
+        type: CHANGE_SORTING_PARAM
     }
 }
 
@@ -54,12 +68,14 @@ export const fetchCoins = (): ThunkAction<Promise<void>, TcurrencyState, unknown
                 fullName: coin.CoinInfo.FullName,
                 imageUrl: `https://www.cryptocompare.com/${coin.CoinInfo.ImageUrl}`,
                 price: coin.RAW.USD.PRICE,
-                volume24Hour: coin.RAW.USD.VOLUME24HOUR
+                volume24Hour: coin.RAW.USD.VOLUME24HOUR,
+                changeHour: coin.RAW.USD.CHANGEHOUR
             }
 
             return coinItem
         })
 
+        console.log(coins)
         dispatch(receiveCoins(coins))
     }
 }

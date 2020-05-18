@@ -30,6 +30,14 @@ const useStyles = makeStyles((theme: Theme) =>
             width: 18,
             height: 18,
             borderRadius: '50%'
+        },
+
+        cellGreen: {
+            background: '#c4feb5'
+        },
+
+        cellRed: {
+            background: '#ffb1b1'
         }
     }),
 );

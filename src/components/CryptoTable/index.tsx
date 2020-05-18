@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 
-import { TCoin } from '../../types'
+import { TCoin, TSortParamsByPrice, TChangeSortingParamAction } from '../../types'
 import { TRootState } from '../../store'
-import { fetchCoins } from '../../store/currencyReducer'
+import { fetchCoins, changeSortingParam } from '../../store/currencyReducer'
+import { getSortedCoinsByPrice } from '../../selectors'
 
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -14,11 +15,13 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 type TStateProps = {
-    coins: TCoin[]
+    coins: TCoin[],
+    sortingParam: TSortParamsByPrice
 }
 
 type TDispatchProps = {
     fetchCoins: () => void
+    changeSortingParam: () => TChangeSortingParamAction
 }
 
 type TOwnProps = {
@@ -29,14 +32,23 @@ type TProps = TStateProps & TDispatchProps & TOwnProps
 
 
 const mapStateToProps = (state: TRootState) => ({
-    coins: state.currency.coins
+    coins: getSortedCoinsByPrice(state),
+    sortingParam: state.currency.sortingParam
 })
 
-const mapDispatchToProps = { fetchCoins }
+const mapDispatchToProps = { fetchCoins, changeSortingParam }
 
-const CryptoTable: React.FC<TProps> = ({ coins, fetchCoins, classes }) => {
+const CryptoTable: React.FC<TProps> = ({ coins, sortingParam, fetchCoins, changeSortingParam, classes }) => {
+    console.log('rendeer')
+
     useEffect(() => {
         fetchCoins()
+
+        const interval = window.setInterval(() => {
+            fetchCoins()
+        }, 5000)
+
+        return () => window.clearInterval(interval)
     }, [])
 
     return <TableContainer component={Paper} elevation={3}>
@@ -46,7 +58,7 @@ const CryptoTable: React.FC<TProps> = ({ coins, fetchCoins, classes }) => {
                     <TableCell></TableCell>
                     <TableCell align="left">FullName</TableCell>
                     <TableCell align="left">Name</TableCell>
-                    <TableCell align="left">Price</TableCell>
+                    <TableCell onClick={changeSortingParam} align="left">Price</TableCell>
                     <TableCell align="left">Volume24hour</TableCell>
                 </TableRow>
             </TableHead>
@@ -60,8 +72,10 @@ const CryptoTable: React.FC<TProps> = ({ coins, fetchCoins, classes }) => {
                             </TableCell>
                             <TableCell align="left">{coin.name}</TableCell>
                             <TableCell align="left">{coin.fullName}</TableCell>
-                            <TableCell align="left">${(coin.price).toFixed(3)}</TableCell>
-                            <TableCell align="left">${(coin.volume24Hour).toFixed(3)}</TableCell>
+                            <TableCell className={coin.changeHour > 0 ? classes.cellGreen : classes.cellRed} align="left">
+                                ${(coin.price)}
+                            </TableCell>
+                            <TableCell align="left">${(coin.volume24Hour).toFixed(5)}</TableCell>
                         </TableRow>
                     ))}
             </TableBody>
