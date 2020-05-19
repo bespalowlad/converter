@@ -1,3 +1,5 @@
 export const RECEIVE_COINS = 'ADD_COIN'
 
 export const CHANGE_SORTING_PARAM = 'CHANGE_SORTING_PARAM'
+
+export const SEARCH_BY_STRING = 'SEARCH_BY_STRING' 

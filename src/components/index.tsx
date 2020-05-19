@@ -1,2 +1,3 @@
-export { default as CryptoTable } from './CryptoTable'
-export { default as ConverterBLock } from './ConverterBlock'
+export { default as CryptoTableContainer } from './CryptoTable'
+export { default as ConverterBlock } from './ConverterBlock'
+export { default as HeaderBlock } from './Header'

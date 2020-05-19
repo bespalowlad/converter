@@ -4,23 +4,30 @@ import {
     TCoin,
     TReceiveCoinsAction,
     TSortParamsByPrice,
-    TChangeSortingParamAction
+    TChangeSortingParamAction,
+    TSearchByStringAction
 } from '../types'
-import { RECEIVE_COINS, CHANGE_SORTING_PARAM } from '../constants'
+import {
+    RECEIVE_COINS,
+    CHANGE_SORTING_PARAM,
+    SEARCH_BY_STRING
+} from '../constants'
 
 // type state
 type TcurrencyState = {
     coins: TCoin[],
-    sortingParam: TSortParamsByPrice
+    sortingParam: TSortParamsByPrice,
+    searchParam: string
 }
 
 const initialState: TcurrencyState = {
     coins: [],
-    sortingParam: 'FROM_EXPENSIVE'
+    sortingParam: 'FROM_EXPENSIVE',
+    searchParam: ''
 }
 
 // type action
-type TActionType = TReceiveCoinsAction | TChangeSortingParamAction
+type TActionType = TReceiveCoinsAction | TChangeSortingParamAction | TSearchByStringAction
 
 export const currencyReducer = (state = initialState, action: TActionType): TcurrencyState => {
     switch (action.type) {
@@ -34,6 +41,12 @@ export const currencyReducer = (state = initialState, action: TActionType): Tcur
             return {
                 ...state,
                 sortingParam: state.sortingParam === 'FROM_EXPENSIVE' ? 'FROM_CHEAP' : 'FROM_EXPENSIVE'
+            }
+
+        case SEARCH_BY_STRING:
+            return {
+                ...state,
+                searchParam: action.searchParam
             }
 
         default:
@@ -53,6 +66,13 @@ export const receiveCoins = (coins: TCoin[]): TReceiveCoinsAction => {
 export const changeSortingParam = (): TChangeSortingParamAction => {
     return {
         type: CHANGE_SORTING_PARAM
+    }
+}
+
+export const searchByString = (searchParam: string): TSearchByStringAction => {
+    return {
+        type: SEARCH_BY_STRING,
+        searchParam
     }
 }
 

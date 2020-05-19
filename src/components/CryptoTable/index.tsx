@@ -14,6 +14,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+import ArrowSvg from '../../images/arrow.svg'
+
 type TStateProps = {
     coins: TCoin[],
     sortingParam: TSortParamsByPrice
@@ -44,11 +46,11 @@ const CryptoTable: React.FC<TProps> = ({ coins, sortingParam, fetchCoins, change
     useEffect(() => {
         fetchCoins()
 
-        const interval = window.setInterval(() => {
-            fetchCoins()
-        }, 5000)
+        // const interval = window.setInterval(() => {
+        //     fetchCoins()
+        // }, 5000)
 
-        return () => window.clearInterval(interval)
+        // return () => window.clearInterval(interval)
     }, [])
 
     return <TableContainer component={Paper} elevation={3}>
@@ -58,7 +60,10 @@ const CryptoTable: React.FC<TProps> = ({ coins, sortingParam, fetchCoins, change
                     <TableCell></TableCell>
                     <TableCell align="left">FullName</TableCell>
                     <TableCell align="left">Name</TableCell>
-                    <TableCell onClick={changeSortingParam} align="left">Price</TableCell>
+                    <TableCell onClick={changeSortingParam} className={classes.sortable} align="left">
+                        Price
+                        <img src={ArrowSvg} className={sortingParam === 'FROM_EXPENSIVE' ? classes.pointerDown : ''} alt="Arrow" />
+                    </TableCell>
                     <TableCell align="left">Volume24hour</TableCell>
                 </TableRow>
             </TableHead>

@@ -12,6 +12,25 @@ const useStyles = makeStyles((theme: Theme) =>
             color: theme.palette.text.secondary,
         },
 
+        header: {
+            padding: 40
+        },
+
+        search: {
+            padding: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            width: 400,
+        },
+
+        searchInput: {
+            flex: 1
+        },
+
+        searchButton: {
+            padding: 10
+        },
+
         inputBox: {
             marginTop: 20,
             marginBottom: 20
@@ -38,6 +57,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
         cellRed: {
             background: '#ffb1b1'
+        },
+
+        sortable: {
+            cursor: 'pointer',
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
+
+        pointerDown: {
+            transform: 'scale(-1, -1)'
         }
     }),
 );
