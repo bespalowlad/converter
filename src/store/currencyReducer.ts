@@ -18,6 +18,7 @@ import {
     SELECT_CURRENCY,
     EXCHANGE_CURRENCY
 } from '../constants'
+import { loadCoins } from '../api'
 
 // type state
 type TcurrencyState = {
@@ -129,10 +130,8 @@ export const exchangeCurrency = (amount: number): TExchangeCurrencyAction => {
 //thunks
 export const fetchCoins = (): ThunkAction<Promise<void>, TcurrencyState, unknown, TActionType> => {
     return async (dispatch) => {
-        const API_KEY: string = `3a06d412960b4f017361f492d59765a72c8cd3266d7e0ac360df95b1d3aae70d`;
-
         dispatch(toggleProgress(true))
-        const { data } = await axios.get(`https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=USD&api_key=${API_KEY}`)
+        const { data } = await loadCoins()
 
         const coins: TCoin[] = data.Data.map((coin: any) => {
             const coinItem: TCoin = {
