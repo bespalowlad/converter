@@ -1,1 +1,1 @@
-![alt text](https://prnt.sc/snfb99 "Конвертер")
+![alt text](screenshots/converter.png "Конвертер")
