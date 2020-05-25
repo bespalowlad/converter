@@ -12,6 +12,10 @@ const useStyles = makeStyles((theme: Theme) =>
             color: theme.palette.text.secondary,
         },
 
+        row: {
+            cursor: 'pointer'
+        },
+
         header: {
             padding: 40
         },
@@ -41,6 +45,10 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: 15
         },
 
+        outputValue: {
+            width: '100%'
+        },
+
         currencyType: {
             width: '30%'
         },
@@ -67,6 +75,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
         pointerDown: {
             transform: 'scale(-1, -1)'
+        },
+
+        progressBox: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
         }
     }),
 );

@@ -2,35 +2,53 @@ import axios from 'axios'
 import { ThunkAction } from 'redux-thunk'
 import {
     TCoin,
+    TToggleProgressAction,
     TReceiveCoinsAction,
     TSortParamsByPrice,
     TChangeSortingParamAction,
-    TSearchByStringAction
+    TSearchByStringAction,
+    TSelectCurrencyAction,
+    TExchangeCurrencyAction
 } from '../types'
 import {
+    TOGGLE_PROGRESS,
     RECEIVE_COINS,
     CHANGE_SORTING_PARAM,
-    SEARCH_BY_STRING
+    SEARCH_BY_STRING,
+    SELECT_CURRENCY,
+    EXCHANGE_CURRENCY
 } from '../constants'
 
 // type state
 type TcurrencyState = {
     coins: TCoin[],
     sortingParam: TSortParamsByPrice,
-    searchParam: string
+    searchParam: string,
+    isVisibleProgress: boolean,
+    selectedCurrency: TCoin,
+    amountSelectedCurrency: number
 }
 
 const initialState: TcurrencyState = {
     coins: [],
     sortingParam: 'FROM_EXPENSIVE',
-    searchParam: ''
+    searchParam: '',
+    isVisibleProgress: false,
+    selectedCurrency: {} as TCoin,
+    amountSelectedCurrency: 0
 }
 
 // type action
-type TActionType = TReceiveCoinsAction | TChangeSortingParamAction | TSearchByStringAction
+type TActionType = TToggleProgressAction | TReceiveCoinsAction | TChangeSortingParamAction | TSearchByStringAction | TSelectCurrencyAction | TExchangeCurrencyAction
 
 export const currencyReducer = (state = initialState, action: TActionType): TcurrencyState => {
     switch (action.type) {
+        case TOGGLE_PROGRESS:
+            return {
+                ...state,
+                isVisibleProgress: action.payload
+            }
+
         case RECEIVE_COINS:
             return {
                 ...state,
@@ -49,11 +67,30 @@ export const currencyReducer = (state = initialState, action: TActionType): Tcur
                 searchParam: action.searchParam
             }
 
+        case SELECT_CURRENCY:
+            return {
+                ...state,
+                selectedCurrency: action.currency
+            }
+
+        case EXCHANGE_CURRENCY:
+            return {
+                ...state,
+                amountSelectedCurrency: action.amount
+            }
+
         default:
             return state
     }
 }
 
+//action creator
+export const toggleProgress = (payload: boolean): TToggleProgressAction => {
+    return {
+        type: TOGGLE_PROGRESS,
+        payload
+    }
+}
 
 export const receiveCoins = (coins: TCoin[]): TReceiveCoinsAction => {
     return {
@@ -61,7 +98,6 @@ export const receiveCoins = (coins: TCoin[]): TReceiveCoinsAction => {
         payload: coins
     }
 }
-
 
 export const changeSortingParam = (): TChangeSortingParamAction => {
     return {
@@ -76,10 +112,26 @@ export const searchByString = (searchParam: string): TSearchByStringAction => {
     }
 }
 
+export const selectCurrency = (currency: TCoin): TSelectCurrencyAction => {
+    return {
+        type: SELECT_CURRENCY,
+        currency
+    }
+}
+
+export const exchangeCurrency = (amount: number): TExchangeCurrencyAction => {
+    return {
+        type: EXCHANGE_CURRENCY,
+        amount
+    }
+}
+
+//thunks
 export const fetchCoins = (): ThunkAction<Promise<void>, TcurrencyState, unknown, TActionType> => {
     return async (dispatch) => {
         const API_KEY: string = `3a06d412960b4f017361f492d59765a72c8cd3266d7e0ac360df95b1d3aae70d`;
 
+        dispatch(toggleProgress(true))
         const { data } = await axios.get(`https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=USD&api_key=${API_KEY}`)
 
         const coins: TCoin[] = data.Data.map((coin: any) => {
@@ -96,6 +148,8 @@ export const fetchCoins = (): ThunkAction<Promise<void>, TcurrencyState, unknown
         })
 
         console.log(coins)
+        dispatch(toggleProgress(false))
         dispatch(receiveCoins(coins))
+        dispatch(selectCurrency(coins[0]))
     }
 }

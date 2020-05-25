@@ -1,7 +1,10 @@
 import {
+    TOGGLE_PROGRESS,
     RECEIVE_COINS,
     CHANGE_SORTING_PARAM,
-    SEARCH_BY_STRING
+    SEARCH_BY_STRING,
+    SELECT_CURRENCY,
+    EXCHANGE_CURRENCY
 } from '../constants'
 
 export type TCoin = {
@@ -11,6 +14,11 @@ export type TCoin = {
     price: number
     volume24Hour: number,
     changeHour: number
+}
+
+export type TToggleProgressAction = {
+    type: typeof TOGGLE_PROGRESS,
+    payload: boolean
 }
 
 export type TReceiveCoinsAction = {
@@ -28,3 +36,14 @@ export type TSearchByStringAction = {
     type: typeof SEARCH_BY_STRING,
     searchParam: string
 }
+
+export type TSelectCurrencyAction = {
+    type: typeof SELECT_CURRENCY,
+    currency: TCoin
+}
+
+export type TExchangeCurrencyAction = {
+    type: typeof EXCHANGE_CURRENCY,
+    amount: number
+}
+

@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 
 import { TRootState } from '../store'
 import { TCoin, TSortParamsByPrice } from '../types'
+import { selectCurrency } from '../store/currencyReducer'
 
 const getCoins = (state: TRootState) => state.currency.coins
 const getSortingParam = (state: TRootState) => state.currency.sortingParam
@@ -48,4 +49,14 @@ export const getSortedCoinsByPrice = createSelector(
                 return coins.filter(coin => findCoinByString(coin))
         }
     }
-) 
+)
+
+const getAmountSelectedCurrency = (state: TRootState) => state.currency.amountSelectedCurrency
+const getSelectedCurrency = (state: TRootState) => state.currency.selectedCurrency
+
+export const getValueExchangedCurrencies = createSelector(
+    [getAmountSelectedCurrency, getSelectedCurrency],
+    (amount: number, selectedCurrency: TCoin) => {
+        return amount * selectedCurrency.price
+    }
+)
