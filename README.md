@@ -1,1 +1,1 @@
-![alt text](screenshots/converter.png "Конвертер")
+![alt text](https://github.com/bespalowlad/converter/blob/master/src/screenshots/converter.png)
